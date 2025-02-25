@@ -31,6 +31,7 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 
     protected $fillable = [
         'email',
+        'name',
         'password',
     ];
 
