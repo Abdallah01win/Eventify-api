@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\EventController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -77,12 +76,6 @@ Route::middleware('auth:api')->group(
                 );
             }
         );
-
-        Route::prefix('events')->name('events.')->group( function ()   {
-            Route::apiResource('/', EventController::class);
-            Route::post('/{event}/join', [EventController::class, 'join']);
-            Route::post('/{event}/leave', [EventController::class, 'leave']);
-        });
     }
 );
 
