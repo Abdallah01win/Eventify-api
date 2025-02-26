@@ -22,6 +22,8 @@ class EventController extends Controller
     
     public function store(StoreEventRequest $request)
     {
+        $this->authorize('event.create');
+        
         DB::beginTransaction();
         
         try {
@@ -46,7 +48,7 @@ class EventController extends Controller
     
     public function update(UpdateEventRequest $request, Event $event)
     {
-        $this->authorize('update', $event);
+        $this->authorize('event.update');
         
         DB::beginTransaction();
         

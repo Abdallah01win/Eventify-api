@@ -18,7 +18,7 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         try {
-            $user = Auth::user();
+            $user = Auth::user()->makeHidden(['email_verified_at', 'updated_at']);
             if (! $user) {
                 return response()->json(['success' => false, 'errors' => [__('auth.user_not_found')]]);
             }
@@ -68,18 +68,20 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
+        $data = $request->validated();
 
         try {
             return DB::transaction(
-                function () use ($request) {
-                    $user = User::where('email', $request->email)->first();
+                function () use ($data) {
+                    $user = User::where('email', $data['email'])->first();
                     if ($user) {
                         return response()->json(['success' => false, 'errors' => [__('auth.email_already_exists')]]);
                     }
                     $user = User::create(
                         [
-                            'email' => $request->email,
-                            'password' => Hash::make($request->password),
+                            'email' => $data['email'],
+                            'name' => $data['name'],
+                            'password' => Hash::make($data['password']),
                         ]
                     );
                     $user->assignRole(ROLE::USER);

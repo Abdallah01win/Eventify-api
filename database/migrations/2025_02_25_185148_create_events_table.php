@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\EventStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,8 +21,8 @@ return new class extends Migration
             $table->string('location');
             $table->dateTime('start_date');
             $table->dateTime('end_date');
-            $table->integer('max_participants');
-            $table->string('status')->default('upcoming'); // upcoming, ongoing, past
+            $table->unsignedInteger('max_participants');
+            $table->unsignedTinyInteger('status')->default(EventStatus::UPCOMING);
             $table->timestamps();
         });
     }
