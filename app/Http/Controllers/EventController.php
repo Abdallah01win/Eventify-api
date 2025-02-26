@@ -2,75 +2,56 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreEventRequest;
-use App\Http\Requests\UpdateEventRequest;
-use App\Http\Resources\EventResource;
 use App\Models\Event;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
+use Log;
 
-class EventController extends Controller
+class EventController extends CrudController
 {
-    public function index()
-    {
-        $events = Event::with(['category', 'user'])
-            ->latest()
-            ->paginate(10);
+    protected $table = 'events';
 
-        return EventResource::collection($events);
+    protected $modelClass = Event::class;
+
+    protected function getTable()
+    {
+        return $this->table;
     }
 
-    public function store(StoreEventRequest $request)
+    protected function getModelClass()
     {
-        $this->authorize('events.create');
+        return $this->modelClass;
+    }
 
-        DB::beginTransaction();
+    protected function getReadAllQuery(): Builder
+    {
+        return $this->model()->with(['user', 'category']);
+    }
 
+    public function createOne(Request $request)
+    {
         try {
-            $event = Event::create([
-                'user_id' => auth()->id(),
-                ...$request->validated()
-            ]);
+            $request->merge(['user_id' => auth()->id()]);
 
-            DB::commit();
-
-            return new EventResource($event->load(['category', 'user']));
+            return parent::createOne($request);
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['message' => 'Error creating event'], 500);
+            Log::error('Error caught in function EventController.createOne : ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
+
+            return response()->json(['success' => false, 'errors' => [__('common.unexpected_error')]]);
         }
     }
 
-    public function show(Event $event)
+    public function updateOne($id, Request $request)
     {
-        return new EventResource($event->load(['category', 'user']));
-    }
-
-    public function update(UpdateEventRequest $request, Event $event)
-    {
-        $this->authorize('events.update');
-
-        DB::beginTransaction();
-
         try {
-            $event->update($request->validated());
-
-            DB::commit();
-
-            return new EventResource($event->load(['category', 'user']));
+            return parent::updateOne($id, $request);
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['message' => 'Error updating event'], 500);
+            Log::error('Error caught in function EventController.updateOne : ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
+
+            return response()->json(['success' => false, 'errors' => [__('common.unexpected_error')]]);
         }
-    }
-
-    public function destroy(Event $event)
-    {
-        $this->authorize('delete', $event);
-
-        $event->delete();
-
-        return response()->json(['message' => 'Event deleted successfully']);
     }
 
     public function join(Event $event)
