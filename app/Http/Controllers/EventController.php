@@ -16,60 +16,60 @@ class EventController extends Controller
         $events = Event::with(['category', 'user'])
             ->latest()
             ->paginate(10);
-            
+
         return EventResource::collection($events);
     }
-    
+
     public function store(StoreEventRequest $request)
     {
-        $this->authorize('event.create');
-        
+        $this->authorize('events.create');
+
         DB::beginTransaction();
-        
+
         try {
             $event = Event::create([
                 'user_id' => auth()->id(),
                 ...$request->validated()
             ]);
-            
+
             DB::commit();
-            
+
             return new EventResource($event->load(['category', 'user']));
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['message' => 'Error creating event'], 500);
         }
     }
-    
+
     public function show(Event $event)
     {
         return new EventResource($event->load(['category', 'user']));
     }
-    
+
     public function update(UpdateEventRequest $request, Event $event)
     {
-        $this->authorize('event.update');
-        
+        $this->authorize('events.update');
+
         DB::beginTransaction();
-        
+
         try {
             $event->update($request->validated());
-            
+
             DB::commit();
-            
+
             return new EventResource($event->load(['category', 'user']));
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['message' => 'Error updating event'], 500);
         }
     }
-    
+
     public function destroy(Event $event)
     {
         $this->authorize('delete', $event);
-        
+
         $event->delete();
-        
+
         return response()->json(['message' => 'Event deleted successfully']);
     }
 
@@ -90,7 +90,7 @@ class EventController extends Controller
     public function leave(Event $event)
     {
         $participant = $event->participants()->where('user_id', auth()->id())->first();
-        
+
         if (!$participant) {
             return response()->json(['message' => 'Not participating in this event'], 400);
         }
