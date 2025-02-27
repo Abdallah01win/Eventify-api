@@ -18,7 +18,7 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         try {
-            $user = Auth::user();
+            $user = Auth::user()->makeHidden(['email_verified_at', 'updated_at']);
             if (! $user) {
                 return response()->json(['success' => false, 'errors' => [__('auth.user_not_found')]]);
             }
@@ -68,7 +68,6 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
-
         try {
             return DB::transaction(
                 function () use ($request) {
@@ -79,6 +78,7 @@ class AuthController extends Controller
                     $user = User::create(
                         [
                             'email' => $request->email,
+                            'name' => $request->name,
                             'password' => Hash::make($request->password),
                         ]
                     );
