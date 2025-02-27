@@ -68,20 +68,18 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
-        $data = $request->validated();
-
         try {
             return DB::transaction(
-                function () use ($data) {
-                    $user = User::where('email', $data['email'])->first();
+                function () use ($request) {
+                    $user = User::where('email', $request->email)->first();
                     if ($user) {
                         return response()->json(['success' => false, 'errors' => [__('auth.email_already_exists')]]);
                     }
                     $user = User::create(
                         [
-                            'email' => $data['email'],
-                            'name' => $data['name'],
-                            'password' => Hash::make($data['password']),
+                            'email' => $request->email,
+                            'name' => $request->name,
+                            'password' => Hash::make($request->password),
                         ]
                     );
                     $user->assignRole(ROLE::USER);

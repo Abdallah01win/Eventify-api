@@ -25,7 +25,7 @@ class EventController extends CrudController
 
     protected function getReadAllQuery(): Builder
     {
-        return $this->model()->with(['user', 'category']);
+        return $this->model()->with(['user:id,name,email', 'category:id,name,slug']);
     }
 
     public function createOne(Request $request)
