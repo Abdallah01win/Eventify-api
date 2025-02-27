@@ -12,19 +12,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('events', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->string('title');
-            $table->text('description');
-            $table->string('location');
-            $table->dateTime('start_date');
-            $table->dateTime('end_date');
-            $table->unsignedInteger('max_participants');
-            $table->unsignedTinyInteger('status')->default(EventStatus::UPCOMING);
-            $table->timestamps();
-        });
+        Schema::create(
+            'events', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->foreignId('category_id')->constrained()->onDelete('cascade');
+                $table->string('title');
+                $table->text('description');
+                $table->string('location');
+                $table->dateTime('start_date');
+                $table->dateTime('end_date');
+                $table->unsignedInteger('max_participants');
+                $table->unsignedTinyInteger('status')->default(EventStatus::UPCOMING);
+                $table->timestamps();
+            }
+        );
     }
 
     /**

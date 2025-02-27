@@ -57,18 +57,18 @@ trait HasDataTables
             $subQuery = $this->$relation();
 
             switch (true) {
-                case $this->$relation() instanceof BelongsTo || $this->$relation() instanceof HasOne:
-                    $parentKey = $this->$relation() instanceof BelongsTo ? $this->$relation()->getQualifiedOwnerKeyName() : $this->$relation()->getQualifiedParentKeyName();
-                    $subQuery = $this->$relation()->getRelated()->select($column)->whereColumn($parentKey, $this->$relation()->getQualifiedForeignKeyName());
-                    break;
-                case $this->$relation() instanceof BelongsToMany:
-                    $pivotTable = explode('.', $this->$relation()->getQualifiedRelatedPivotKeyName())[0];
-                    $localForeingKey = $this->getTable().'.'.$this->$relation()->getParentKeyName();
-                    $subQuery = $this->$relation()->getRelated()->select($column)->join($pivotTable, $this->$relation()->getQualifiedRelatedPivotKeyName(), '=', $this->$relation()->getQualifiedRelatedKeyName())->whereColumn($this->$relation()->getQualifiedForeignPivotKeyName(), $localForeingKey)->orderBy($column, $orderDir)->limit(1);
-                    break;
-                case $this->$relation() instanceof HasMany:
-                    $subQuery = $this->$relation()->getRelated()->select($column)->whereColumn($this->$relation()->getQualifiedForeignKeyName(), $this->$relation()->getQualifiedParentKeyName())->orderBy($column, $orderDir)->limit(1);
-                    break;
+            case $this->$relation() instanceof BelongsTo || $this->$relation() instanceof HasOne:
+                $parentKey = $this->$relation() instanceof BelongsTo ? $this->$relation()->getQualifiedOwnerKeyName() : $this->$relation()->getQualifiedParentKeyName();
+                $subQuery = $this->$relation()->getRelated()->select($column)->whereColumn($parentKey, $this->$relation()->getQualifiedForeignKeyName());
+                break;
+            case $this->$relation() instanceof BelongsToMany:
+                $pivotTable = explode('.', $this->$relation()->getQualifiedRelatedPivotKeyName())[0];
+                $localForeingKey = $this->getTable().'.'.$this->$relation()->getParentKeyName();
+                $subQuery = $this->$relation()->getRelated()->select($column)->join($pivotTable, $this->$relation()->getQualifiedRelatedPivotKeyName(), '=', $this->$relation()->getQualifiedRelatedKeyName())->whereColumn($this->$relation()->getQualifiedForeignPivotKeyName(), $localForeingKey)->orderBy($column, $orderDir)->limit(1);
+                break;
+            case $this->$relation() instanceof HasMany:
+                $subQuery = $this->$relation()->getRelated()->select($column)->whereColumn($this->$relation()->getQualifiedForeignKeyName(), $this->$relation()->getQualifiedParentKeyName())->orderBy($column, $orderDir)->limit(1);
+                break;
             }
 
             $query->orderBy($subQuery, $orderDir);
@@ -106,18 +106,18 @@ trait HasDataTables
                 $subQuery = $this->$relation();
 
                 switch (true) {
-                    case $this->$relation() instanceof BelongsTo || $this->$relation() instanceof HasOne:
-                        $parentKey = $this->$relation() instanceof BelongsTo ? $this->$relation()->getQualifiedOwnerKeyName() : $this->$relation()->getQualifiedParentKeyName();
-                        $subQuery = $this->$relation()->getRelated()->selectRaw('count(*)')->whereColumn($parentKey, $this->$relation()->getQualifiedForeignKeyName());
-                        break;
-                    case $this->$relation() instanceof BelongsToMany:
-                        $pivotTable = explode('.', $this->$relation()->getQualifiedRelatedPivotKeyName())[0];
-                        $localForeingKey = $this->getTable().'.'.$this->$relation()->getParentKeyName();
-                        $subQuery = $this->$relation()->getRelated()->selectRaw('count(*)')->join($pivotTable, $this->$relation()->getQualifiedRelatedPivotKeyName(), '=', $this->$relation()->getQualifiedRelatedKeyName())->whereColumn($this->$relation()->getQualifiedForeignPivotKeyName(), $localForeingKey);
-                        break;
-                    case $this->$relation() instanceof HasMany:
-                        $subQuery = $this->$relation()->getRelated()->selectRaw('count(*)')->whereColumn($this->$relation()->getQualifiedForeignKeyName(), $this->$relation()->getQualifiedParentKeyName());
-                        break;
+                case $this->$relation() instanceof BelongsTo || $this->$relation() instanceof HasOne:
+                    $parentKey = $this->$relation() instanceof BelongsTo ? $this->$relation()->getQualifiedOwnerKeyName() : $this->$relation()->getQualifiedParentKeyName();
+                    $subQuery = $this->$relation()->getRelated()->selectRaw('count(*)')->whereColumn($parentKey, $this->$relation()->getQualifiedForeignKeyName());
+                    break;
+                case $this->$relation() instanceof BelongsToMany:
+                    $pivotTable = explode('.', $this->$relation()->getQualifiedRelatedPivotKeyName())[0];
+                    $localForeingKey = $this->getTable().'.'.$this->$relation()->getParentKeyName();
+                    $subQuery = $this->$relation()->getRelated()->selectRaw('count(*)')->join($pivotTable, $this->$relation()->getQualifiedRelatedPivotKeyName(), '=', $this->$relation()->getQualifiedRelatedKeyName())->whereColumn($this->$relation()->getQualifiedForeignPivotKeyName(), $localForeingKey);
+                    break;
+                case $this->$relation() instanceof HasMany:
+                    $subQuery = $this->$relation()->getRelated()->selectRaw('count(*)')->whereColumn($this->$relation()->getQualifiedForeignKeyName(), $this->$relation()->getQualifiedParentKeyName());
+                    break;
                 }
 
                 if ($operatorWithValue->operator == 'in') {

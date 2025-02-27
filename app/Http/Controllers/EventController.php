@@ -60,10 +60,12 @@ class EventController extends CrudController
             return response()->json(['message' => 'Already participating'], 400);
         }
 
-        $event->participants()->create([
+        $event->participants()->create(
+            [
             'user_id' => auth()->id(),
             'status' => 'confirmed'
-        ]);
+            ]
+        );
 
         return response()->json(['message' => 'Successfully joined event', 'status' => 'confirmed']);
     }
