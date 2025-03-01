@@ -15,6 +15,8 @@ Route::middleware('auth:api')->group(
                         Route::put('/{id}', 'updateOne');
                         Route::patch('/{id}', 'patchOne');
                         Route::delete('/{id}', 'deleteOne');
+                        Route::post('/join/{id}', 'join');
+                        Route::post('/leave/{id}', 'leave');
                     }
                 );
             }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Log;
 
 class EventController extends CrudController
@@ -25,13 +26,13 @@ class EventController extends CrudController
 
     protected function getReadAllQuery(): Builder
     {
-        return $this->model()->with(['user:id,name,email', 'category:id,name,slug']);
+        return $this->model()->with(['category:id,name,slug']);
     }
 
     public function createOne(Request $request)
     {
         try {
-            $request->merge(['user_id' => auth()->id()]);
+            $request->merge(['user_id' => Auth::id()]);
 
             return parent::createOne($request);
         } catch (\Exception $e) {
@@ -54,25 +55,31 @@ class EventController extends CrudController
         }
     }
 
-    public function join(Event $event)
+    public function join($id)
     {
-        if ($event->participants()->where('user_id', auth()->id())->exists()) {
+        $userId = Auth::id();
+        $event = Event::findOrFail($id);
+
+        if ($event->participants()->where('user_id', $userId)->exists()) {
             return response()->json(['message' => 'Already participating'], 400);
         }
 
         $event->participants()->create(
             [
-            'user_id' => auth()->id(),
-            'status' => 'confirmed'
+                'user_id' => $userId,
+                'event_id' => $event->id,
+                'status' => 'confirmed'
             ]
         );
 
         return response()->json(['message' => 'Successfully joined event', 'status' => 'confirmed']);
     }
 
-    public function leave(Event $event)
+    public function leave($id)
     {
-        $participant = $event->participants()->where('user_id', auth()->id())->first();
+        $event = Event::findOrFail($id);
+
+        $participant = $event->participants()->where('user_id', Auth::id())->first();
 
         if (!$participant) {
             return response()->json(['message' => 'Not participating in this event'], 400);
