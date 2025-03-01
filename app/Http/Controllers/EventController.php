@@ -26,7 +26,22 @@ class EventController extends CrudController
 
     protected function getReadAllQuery(): Builder
     {
-        return $this->model()->with(['category:id,name,slug']);
+        $userId = Auth::id();
+        $now = now();
+
+        return $this->model()
+            ->with(['category:id,name'])
+            ->with(['participants' => function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            }])
+            ->withCount('participants')
+            ->where(function ($query) use ($userId, $now) {
+                $query->where('user_id', $userId)
+                    ->orWhereHas('participants', function ($query) use ($userId) {
+                        $query->where('user_id', $userId);
+                    })
+                    ->orWhere('end_date', '>=', $now);
+            });
     }
 
     public function createOne(Request $request)
@@ -61,7 +76,7 @@ class EventController extends CrudController
         $event = Event::findOrFail($id);
 
         if ($event->participants()->where('user_id', $userId)->exists()) {
-            return response()->json(['message' => 'Already participating'], 400);
+            return response()->json(['success' => false, 'errors' => ['Already participating']]);
         }
 
         $event->participants()->create(
@@ -72,7 +87,7 @@ class EventController extends CrudController
             ]
         );
 
-        return response()->json(['message' => 'Successfully joined event', 'status' => 'confirmed']);
+        return response()->json(['success' => true, 'message' => 'Successfully joined event']);
     }
 
     public function leave($id)
@@ -82,11 +97,11 @@ class EventController extends CrudController
         $participant = $event->participants()->where('user_id', Auth::id())->first();
 
         if (!$participant) {
-            return response()->json(['message' => 'Not participating in this event'], 400);
+            return response()->json(['success' => false, 'errors' => ['Not participating in this event']]);
         }
 
         $participant->delete();
 
-        return response()->json(['message' => 'Successfully left event']);
+        return response()->json(['success' => true, 'message' => 'Successfully left event']);
     }
 }
