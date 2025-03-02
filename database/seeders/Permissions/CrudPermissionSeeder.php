@@ -29,7 +29,7 @@ class CrudPermissionSeeder extends Seeder
             $aclService->assignScopePermissionsToRole($advertiserRole, 'interests', ['read']);
             $aclService->assignScopePermissionsToRole($advertiserRole, 'games', ['create', 'read_own']);
         */
-        
+
         // Create scoped permissions
         $aclService->createScopePermissions('categories', ['create', 'read', 'update', 'delete']);
         $aclService->createScopePermissions('events', ['create', 'read', 'update', 'delete']);
@@ -41,6 +41,7 @@ class CrudPermissionSeeder extends Seeder
         // Assign permissions to roles
         $aclService->assignScopePermissionsToRole($adminRole, 'categories', ['create', 'read', 'update', 'delete']);
         $aclService->assignScopePermissionsToRole($adminRole, 'events', ['create', 'read', 'update', 'delete']);
+        $aclService->assignScopePermissionsToRole($userRole, 'categories', ['read']);
         $aclService->assignScopePermissionsToRole($userRole, 'events', ['create', 'read', 'update', 'delete']);
     }
 }
