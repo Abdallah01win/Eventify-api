@@ -31,17 +31,23 @@ class EventController extends CrudController
 
         return $this->model()
             ->with(['category:id,name'])
-            ->with(['participants' => function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            }])
+            ->with(
+                ['participants' => function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                }]
+            )
             ->withCount('participants')
-            ->where(function ($query) use ($userId, $now) {
-                $query->where('user_id', $userId)
-                    ->orWhereHas('participants', function ($query) use ($userId) {
-                        $query->where('user_id', $userId);
-                    })
+            ->where(
+                function ($query) use ($userId, $now) {
+                    $query->where('user_id', $userId)
+                        ->orWhereHas(
+                            'participants', function ($query) use ($userId) {
+                                $query->where('user_id', $userId);
+                            }
+                        )
                     ->orWhere('end_date', '>=', $now);
-            });
+                }
+            );
     }
 
     public function createOne(Request $request)
