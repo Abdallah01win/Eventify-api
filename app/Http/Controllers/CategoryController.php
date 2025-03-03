@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Illuminate\Database\Eloquent\Builder;
 
 class CategoryController extends CrudController
 {
@@ -18,5 +19,10 @@ class CategoryController extends CrudController
     protected function getModelClass()
     {
         return $this->modelClass;
+    }
+
+    protected function getReadAllQuery(): Builder
+    {
+        return $this->model()->select('id', 'name');
     }
 }
