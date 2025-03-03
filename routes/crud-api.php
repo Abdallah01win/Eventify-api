@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->group(
@@ -17,6 +18,16 @@ Route::middleware('auth:api')->group(
                         Route::delete('/{id}', 'deleteOne');
                         Route::post('/join/{id}', 'join');
                         Route::post('/leave/{id}', 'leave');
+                    }
+                );
+            }
+        );
+
+        Route::prefix('categories')->name('categories.')->group(
+            function () {
+                Route::controller(CategoryController::class)->group(
+                    function () {
+                        Route::get('/', 'readAll');
                     }
                 );
             }
