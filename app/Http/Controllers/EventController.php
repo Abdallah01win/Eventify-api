@@ -45,7 +45,7 @@ class EventController extends CrudController
                         'participants',
                         fn($query) => $query->where('user_id', $userId)
                     )
-                    ->orWhere('end_date', '>=', $now)
+                    ->orWhere('end_date', '>', $now)
             );
     }
 
@@ -86,9 +86,10 @@ class EventController extends CrudController
     {
         try {
             $event = Event::findOrFail($id);
+            $participants = $event->participants()->get();
             $response = parent::deleteOne($id, $request);
 
-            foreach ($event->participants as $participant) {
+            foreach ($participants as $participant) {
                 Mail::to($participant->user->email)->send(new EventDeleted($event));
             }
 
@@ -114,13 +115,12 @@ class EventController extends CrudController
             [
                 'user_id' => $userId,
                 'event_id' => $event->id,
-                'status' => 'confirmed'
             ]
         );
 
         Mail::to($event->user->email)->send(new UserJoinedEvent($event, Auth::user()));
 
-        return response()->json(['message' => 'Successfully joined event', 'status' => 'confirmed']);
+        return response()->json(['success' => true, 'message' => 'Successfully joined event',]);
     }
 
     public function leave($id)
