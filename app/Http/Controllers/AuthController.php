@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\ROLE;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Mail\UserRegistered;
 use App\Models\User;
 use DB;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -36,7 +38,7 @@ class AuthController extends Controller
                 ]
             );
         } catch (\Exception $e) {
-            Log::error('Error caught in function AuthController.me: '.$e->getMessage());
+            Log::error('Error caught in function AuthController.me: ' . $e->getMessage());
             Log::error($e->getTraceAsString());
 
             return response()->json(['success' => false, 'errors' => [__('common.unexpected_error')]]);
@@ -59,7 +61,7 @@ class AuthController extends Controller
 
             return response()->json(['success' => true, 'message' => __('auth.login_success'), 'data' => ['token' => $token]]);
         } catch (\Exception $e) {
-            Log::error('Error caught in function AuthController.login: '.$e->getMessage());
+            Log::error('Error caught in function AuthController.login: ' . $e->getMessage());
             Log::error($e->getTraceAsString());
 
             return response()->json(['success' => false, 'errors' => [__('common.unexpected_error')]]);
@@ -84,12 +86,13 @@ class AuthController extends Controller
                     );
                     $user->assignRole(ROLE::USER);
                     $token = $user->createToken('authToken', ['expires_in' => 60 * 24 * 30])->plainTextToken;
-
+                    Mail::to($user->email)->send(new UserRegistered($user));
+                    
                     return response()->json(['success' => true, 'data' => ['token' => $token], 'message' => __('auth.register_success')]);
                 }
             );
         } catch (\Exception $e) {
-            Log::error('Error caught in function AuthController.register: '.$e->getMessage());
+            Log::error('Error caught in function AuthController.register: ' . $e->getMessage());
             Log::error($e->getTraceAsString());
 
             return response()->json(['success' => false, 'errors' => [__('common.unexpected_error')]]);
@@ -104,7 +107,7 @@ class AuthController extends Controller
 
             return response()->json(['success' => true, 'message' => __('auth.logout_success')]);
         } catch (\Exception $e) {
-            Log::error('Error caught in function AuthController.logout: '.$e->getMessage());
+            Log::error('Error caught in function AuthController.logout: ' . $e->getMessage());
             Log::error($e->getTraceAsString());
 
             return response()->json(['success' => false, 'errors' => [__('common.unexpected_error')]]);
@@ -128,7 +131,7 @@ class AuthController extends Controller
 
             return response()->json(['success' => false, 'errors' => [__('common.unexpected_error')]]);
         } catch (\Exception $e) {
-            Log::error('Error caught in function AuthController.requestPasswordReset: '.$e->getMessage());
+            Log::error('Error caught in function AuthController.requestPasswordReset: ' . $e->getMessage());
             Log::error($e->getTraceAsString());
 
             return response()->json(['success' => false, 'errors' => [__('common.unexpected_error')]]);
@@ -161,7 +164,7 @@ class AuthController extends Controller
                 }
             );
         } catch (\Exception $e) {
-            Log::error('Error caught in function AuthController.resetPassword: '.$e->getMessage());
+            Log::error('Error caught in function AuthController.resetPassword: ' . $e->getMessage());
             Log::error($e->getTraceAsString());
 
             return response()->json(['success' => false, 'errors' => [__('common.unexpected_error')]]);
