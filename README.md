@@ -60,10 +60,11 @@ If you are using Laragon, XAMPP, or similar tools, make sure to first navigate t
 ### Using PHP's Built-in Server
 
 1. Start the development server:
+   
     ```sh
     php artisan serve
     ```
-2. Follow the URL outputted in your terminal to access the application.
+3. Follow the URL outputted in your terminal to access the application.
 
 ### Front-End Integration
 
