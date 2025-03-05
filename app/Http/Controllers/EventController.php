@@ -66,19 +66,19 @@ class EventController extends CrudController
     public function updateOne($id, Request $request)
     {
         try {
-            $event = Event::findOrFail($id);
-            $response = parent::updateOne($id, $request);
-
-            foreach ($event->participants as $participant) {
-                Mail::to($participant->user->email)->send(new EventUpdated($event));
-            }
-
-            return $response;
+            return parent::updateOne($id, $request);
         } catch (\Exception $e) {
             Log::error('Error caught in function EventController.updateOne : ' . $e->getMessage());
             Log::error($e->getTraceAsString());
 
             return response()->json(['success' => false, 'errors' => [__('common.unexpected_error')]]);
+        }
+    }
+
+    public function afterUpdateOne($event)
+    {
+        foreach ($event->participants as $participant) {
+            Mail::to($participant->user->email)->send(new EventUpdated($event));
         }
     }
 
