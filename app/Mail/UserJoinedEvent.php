@@ -22,8 +22,8 @@ class UserJoinedEvent extends Mailable
 
     public function build()
     {
-        return $this->view('emails.user_joined_event')
-            ->subject('A user has joined your event')
+        return $this->markdown('emails.user_joined_event')
+            ->subject('A user has joined ' . $this->event->title . '.')
             ->with(['event' => $this->event, 'user' => $this->user]);
     }
 }

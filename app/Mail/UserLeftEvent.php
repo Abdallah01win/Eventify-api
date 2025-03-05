@@ -22,13 +22,8 @@ class UserLeftEvent extends Mailable
 
     public function build()
     {
-        return $this->view('emails.user_left_event')
-            ->subject('A user has left your event')
-            ->with(
-                [
-                'event' => $this->event,
-                'user' => $this->user,
-                ]
-            );
+        return $this->markdown('emails.user_left_event')
+            ->subject('A user has left ' . $this->event->title  . '.')
+            ->with(['event' => $this->event, 'user' => $this->user]);
     }
 }

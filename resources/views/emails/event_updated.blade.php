@@ -1,18 +1,22 @@
-<!DOCTYPE html>
-<html>
+@component('mail::message')
+# Event Update: {{ $event->title }}
 
-<head>
-    <title>Event Updated</title>
-</head>
+An event you're participating in has been modified. Here are the updated details:
 
-<body>
-    <h1>The event you joined has been updated</h1>
-    <p>Event: {{ $event->title }}</p>
-    <p>Description: {{ $event->description }}</p>
-    <p>Location: {{ $event->location }}</p>
-    <p>Start Date: {{ $event->start_date }}</p>
-    <p>End Date: {{ $event->end_date }}</p>
-    <p>Thank you for using our application!</p>
-</body>
+@component('mail::panel')
+** Location**<br>
+{{ $event->location }}
 
-</html>
+** Schedule**<br>
+Starts: {{ \Carbon\Carbon::parse($event->start_date)->format('l, F j, Y \a\t g:i A') }}<br>
+Ends: {{ \Carbon\Carbon::parse($event->end_date)->format('l, F j, Y \a\t g:i A') }}
+
+** Description**<br>
+Description: {{ $event->description }}
+@endcomponent
+
+If these changes don't work for you, you can always update your attendance status from the event page.
+
+Thanks,<br>
+{{ $_ENV['API_NAME'] }} Team
+@endcomponent

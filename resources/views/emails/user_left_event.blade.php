@@ -1,15 +1,14 @@
-<!DOCTYPE html>
-<html>
+@component('mail::message')
+# A user has left your event!
 
-<head>
-    <title>User Left Event</title>
-</head>
+@component('mail::panel')
+**Event Details:**  
+{{ $event->title }}
 
-<body>
-    <h1>A user has left your event</h1>
-    <p>Event: {{ $event->title }}</p>
-    <p>User: {{ $user->name }} ({{ $user->email }})</p>
-    <p>Thank you for using our application!</p>
-</body>
+Visit your events page to see and manage all current events.
+@endcomponent
 
-</html>
+
+Thanks,<br>
+{{ $_ENV['API_NAME'] }} Team
+@endcomponent

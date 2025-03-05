@@ -20,8 +20,8 @@ class UserRegistered extends Mailable
 
     public function build()
     {
-        return $this->view('emails.user_registered')
-            ->subject('Welcome to Our Application')
+        return $this->markdown('emails.user_registered')
+            ->subject('Welcome to ' . $_ENV['API_NAME'] . '!')
             ->with(['user' => $this->user]);
     }
 }

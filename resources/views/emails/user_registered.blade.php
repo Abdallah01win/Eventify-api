@@ -1,15 +1,12 @@
-<!DOCTYPE html>
-<html>
+@component('mail::message')
+# Welcome, {{ $user->name }}!
 
-<head>
-    <title>Welcome to Our Application</title>
-</head>
+@component('mail::panel')
+Thank you for joining us at {{$_ENV['API_NAME']}}. We are excited to have you on board.
 
-<body>
-    <h1>Welcome, {{ $user->name }}!</h1>
-    <p>Thank you for registering with our application. We are excited to have you on board.</p>
-    <p>If you have any questions, feel free to reach out to us.</p>
-    <p>Best regards,<br>The Team</p>
-</body>
+If you have any questions, feel free to reach out to us.
+@endcomponent
 
-</html>
+Thanks,<br>
+{{ $_ENV['API_NAME'] }} Team
+@endcomponent

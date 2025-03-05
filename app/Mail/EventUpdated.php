@@ -20,8 +20,8 @@ class EventUpdated extends Mailable
 
     public function build()
     {
-        return $this->view('emails.event_updated')
-            ->subject('The event you joined has been updated')
+        return $this->markdown('emails.event_updated')
+            ->subject($this->event->title . ' has been updated.')
             ->with(['event' => $this->event]);
     }
 }

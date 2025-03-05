@@ -20,8 +20,8 @@ class EventDeleted extends Mailable
 
     public function build()
     {
-        return $this->view('emails.event_deleted')
-            ->subject('The event you joined has been deleted')
+        return $this->markdown('emails.event_deleted')
+            ->subject($this->event->title . ' has been deleted.')
             ->with(['event' => $this->event]);
     }
 }

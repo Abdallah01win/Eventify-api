@@ -1,14 +1,16 @@
-<!DOCTYPE html>
-<html>
+@component('mail::message')
+# Event Cancelled: {{ $event->title }}
 
-<head>
-    <title>Event Deleted</title>
-</head>
+@component('mail::panel')
+We wanted to inform you that an event you were planning to attend has been cancelled by the organizer.
 
-<body>
-    <h1>The event you joined has been deleted</h1>
-    <p>Event: {{ $event->title }}</p>
-    <p>Thank you for using our application!</p>
-</body>
+**Event Details**
+{{ $event->title }}
+Originally scheduled for: {{ \Carbon\Carbon::parse($event->start_date)->format('l, F j, Y \a\t g:i A') }}
+@endcomponent
 
-</html>
+Looking for something else to attend? Check out our event listings to find similar events in your area.
+
+Thanks,<br>
+{{ $_ENV['API_NAME'] }} Team
+@endcomponent
