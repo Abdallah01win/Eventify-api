@@ -35,12 +35,8 @@ If you are using Laragon, XAMPP, or similar tools, make sure to first navigate t
     ```sh
     composer install
     ```
-5. Generate the application key:
-    ```sh
-    php artisan key:generate
-    ```
 
-6. Run the migrations and seeders:
+5. Run the migrations and seeders:
     ```sh
     php artisan migrate --seed
     ```
