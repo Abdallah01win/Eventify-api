@@ -5,7 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
+use App\Mail\EventUpdated;
+use App\Mail\EventDeleted;
+use App\Mail\UserJoinedEvent;
+use App\Mail\UserLeftEvent;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Log;
 
 class EventController extends CrudController
@@ -40,7 +45,7 @@ class EventController extends CrudController
                         'participants',
                         fn($query) => $query->where('user_id', $userId)
                     )
-                    ->orWhere('end_date', '>=', $now)
+                    ->orWhere('end_date', '>', $now)
             );
     }
 
@@ -70,6 +75,33 @@ class EventController extends CrudController
         }
     }
 
+    public function afterUpdateOne($event)
+    {
+        foreach ($event->participants as $participant) {
+            Mail::to($participant->user->email)->send(new EventUpdated($event));
+        }
+    }
+
+    public function deleteOne($id, Request $request)
+    {
+        try {
+            $event = Event::findOrFail($id);
+            $participants = $event->participants()->get();
+            $response = parent::deleteOne($id, $request);
+
+            foreach ($participants as $participant) {
+                Mail::to($participant->user->email)->send(new EventDeleted($event));
+            }
+
+            return $response;
+        } catch (\Exception $e) {
+            Log::error('Error caught in function EventController.deleteOne : ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
+
+            return response()->json(['success' => false, 'errors' => [__('common.unexpected_error')]]);
+        }
+    }
+
     public function join($id)
     {
         $userId = Auth::id();
@@ -83,11 +115,12 @@ class EventController extends CrudController
             [
                 'user_id' => $userId,
                 'event_id' => $event->id,
-                'status' => 'confirmed'
             ]
         );
 
-        return response()->json(['success' => true, 'message' => 'Successfully joined event']);
+        Mail::to($event->user->email)->send(new UserJoinedEvent($event, Auth::user()));
+
+        return response()->json(['success' => true, 'message' => 'Successfully joined event',]);
     }
 
     public function leave($id)
@@ -101,6 +134,8 @@ class EventController extends CrudController
         }
 
         $participant->delete();
+
+        Mail::to($event->user->email)->send(new UserLeftEvent($event, Auth::user()));
 
         return response()->json(['success' => true, 'message' => 'Successfully left event']);
     }

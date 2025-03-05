@@ -54,7 +54,7 @@ class Event extends BaseModel
             'description' => 'required|string',
             'location' => 'required|string',
             'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => 'required|date|before_or_equal:start_date',
+            'end_date' => 'required|date|after_or_equal:start_date',
             'max_participants' => 'required|integer|min:1',
         ];
 
